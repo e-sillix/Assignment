@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float swipeSensitivity = 0.01f;      // drag sensitivity
     [SerializeField] private float horizontalLimit = 3f;          // clamp edges
 
+    [SerializeField] private float swipeMinimumLimit=10f;
     private Rigidbody rb;
     private float targetX;           // the desired X position from touch
     private Vector2 touchStartPos;
@@ -108,9 +109,46 @@ public class PlayerMovement : MonoBehaviour
                 // Clamp to stay within wall bounds
                 targetX = Mathf.Clamp(targetX, -horizontalLimit, horizontalLimit);
             }
+             switch (touch.phase)
+            {
+                case TouchPhase.Began:
+                    touchStartPos = touch.position;
+                    break;
+
+                case TouchPhase.Ended:
+                    Vector2 touchEndPos = touch.position;
+                    float swipeY = touchEndPos.y - touchStartPos.y;
+
+                    if (Mathf.Abs(swipeY) > swipeMinimumLimit)
+                    {
+                        if (swipeY > 0)
+                        {
+                            OnSwipeDown();
+                        }
+                        else
+                        {
+                            OnSwipeUp();
+                        }
+                    }
+                    break;
+            }
         }
+        
     }
 
+    void OnSwipeUp()
+    {
+        // Debug.Log("Swipe Up Detected");
+        playerAnimator.TriggerJump();
+        // Do something
+    }
+
+    void OnSwipeDown()
+    {
+        // Debug.Log("Swipe Down Detected");
+        playerAnimator.TriggerSlide();
+        // Do something
+    }
     void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Finish"))

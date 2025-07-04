@@ -8,6 +8,7 @@ public class PlayerCounter : MonoBehaviour
     private int playerScore = 1;
     [SerializeField] private TextMeshProUGUI playerScoreCounterText;
     [SerializeField] private GameObject PlayerScoreObj;
+    [SerializeField]private float ScalePerScore ; // scale factor per score point
     private PlayerMovement playerMovement;
     private PlayerAnimator playerAnimator;
 
@@ -85,6 +86,8 @@ public class PlayerCounter : MonoBehaviour
             return;
         }
         playerScoreCounterText.text = playerScore.ToString();
+        float newScale = 0.4f+playerScore * ScalePerScore; // e.g. 10 points = 2x scale
+        transform.localScale = new Vector3(newScale, newScale, newScale);
     }
     void OnTriggerEnter(Collider other)
     {

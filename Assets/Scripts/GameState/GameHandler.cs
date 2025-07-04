@@ -22,6 +22,7 @@ public class GameHandler : MonoBehaviour
     }
     public void LevelIsClicked()
     {
+        Time.timeScale = 1f;
         SceneManager.LoadScene("Level1");
     }
     public void MenuIsClicked()
