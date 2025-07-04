@@ -7,7 +7,9 @@ public class PlayerCounter : MonoBehaviour
 {
     private int playerScore = 1;
     [SerializeField] private TextMeshProUGUI playerScoreCounterText;
+    [SerializeField] private GameObject PlayerScoreObj;
     private PlayerMovement playerMovement;
+    private PlayerAnimator playerAnimator;
 
     private WallInstance w;
     // Start is called before the first frame update
@@ -15,18 +17,20 @@ public class PlayerCounter : MonoBehaviour
     {
         UpdatePlayerScoreText();
         playerMovement = GetComponent<PlayerMovement>();
+        playerAnimator = GetComponent<PlayerAnimator>();
     }
     public void IncrementScore()
     {
         playerScore++;
         UpdatePlayerScoreText();
     }
-    public void DecreaseScore(int amount,WallInstance wall)
+    public void DecreaseScore(int amount, WallInstance wall)
     {
         playerScore -= amount;
-        if (playerScore >=1)
+        if (playerScore >= 1)
         {
             wall.WallPassed();
+            playerAnimator.TriggerTackling();
         }
         UpdatePlayerScoreText();
     }
@@ -60,7 +64,7 @@ public class PlayerCounter : MonoBehaviour
                 break;
             case '/':
                 if (value != 0)
-                    playerScore =  (int)(playerScore / value);
+                    playerScore = (int)(playerScore / value);
                 else
                     Debug.LogWarning("Division by zero in expression: " + exp);
                 break;
@@ -68,15 +72,16 @@ public class PlayerCounter : MonoBehaviour
                 Debug.LogWarning("Unknown operation in expression: " + exp);
                 break;
         }
-     UpdatePlayerScoreText();
+        UpdatePlayerScoreText();
 
-    // Debug.Log("New Score: " + playerScore);
+        // Debug.Log("New Score: " + playerScore);
     }
     void UpdatePlayerScoreText()
     {
         if (playerScore < 1)
         {
             playerMovement.TriggerGameOver();
+            playerAnimator.TriggerCollapsing();
             return;
         }
         playerScoreCounterText.text = playerScore.ToString();
@@ -99,7 +104,7 @@ public class PlayerCounter : MonoBehaviour
         {
             DoorCollided(other.GetComponent<DoorInstance>());
         }
-        
+
     }
 
     void WallCollided(WallInstance wall)
@@ -111,7 +116,7 @@ public class PlayerCounter : MonoBehaviour
         if (wall != null)
         {
             WallInstance wallInstance = wall;
-            DecreaseScore(wallInstance.ReturnWallPower(),wallInstance);
+            DecreaseScore(wallInstance.ReturnWallPower(), wallInstance);
             // wallInstance.WallPassed();
         }
     }
@@ -124,4 +129,8 @@ public class PlayerCounter : MonoBehaviour
         }
     }
 
+    public void GameEnded()
+    {
+        PlayerScoreObj.SetActive(false);
+    }
 }

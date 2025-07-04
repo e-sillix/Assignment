@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -16,17 +17,26 @@ public class PlayerMovement : MonoBehaviour
     private float targetX;           // the desired X position from touch
     private Vector2 touchStartPos;
     private GameStateHandler gameState;
+    private InGameUIHandler inGameUIHandler;
+    private PlayerAnimator playerAnimator;
+    private PlayerCounter playerCounter;
 
     void Start()
     {
         rb = GetComponent<Rigidbody>();
         targetX = transform.position.x; // initialize to current position
         gameState = FindObjectOfType<GameStateHandler>();
+        inGameUIHandler = FindObjectOfType<InGameUIHandler>();
+        playerAnimator = GetComponent<PlayerAnimator>();
+        playerCounter = GetComponent<PlayerCounter>();
     }
 
     public void StartMoving() // call this from UI button or space key
     {
         shouldMove = true;
+        playerAnimator.TriggerRunning();
+        inGameUIHandler.GameStarted();
+
     }
 
     void Update()
@@ -34,8 +44,17 @@ public class PlayerMovement : MonoBehaviour
         if (!finishLineReached && !gameOver)
         {
             if (Input.touchCount > 0)
-            { 
-                StartMoving(); // Start moving when the first touch is detected
+            {
+                Touch touch = Input.GetTouch(0);
+
+                // Only start moving when touch **begins**
+                if (touch.phase == TouchPhase.Began)
+                {
+                    if (EventSystem.current.IsPointerOverGameObject(touch.fingerId))
+                        return;
+
+                    StartMoving();
+                }
             }
             if (Input.GetKeyDown(KeyCode.Space) && !shouldMove)
             {
@@ -96,14 +115,22 @@ public class PlayerMovement : MonoBehaviour
     {
         if (other.CompareTag("Finish"))
         {
+            playerAnimator.TriggerWinnning();
             finishLineReached = true;
             gameState.GameWon();
-            Debug.Log("Finish Line Reached!");
+            GameOverWon();
+            // Debug.Log("Finish Line Reached!");
         }
     }
     public void TriggerGameOver()
     {
         gameOver = true;
         gameState.GameOver();
+        playerCounter.GameEnded();
+    }
+
+    void GameOverWon()
+    {
+        playerCounter.GameEnded();
     }
 }
