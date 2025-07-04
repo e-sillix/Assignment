@@ -4,15 +4,10 @@ using UnityEngine;
 
 public class BurgerInstance : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameObject AnimationBurger;
+    public void BugerConsumed()
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        Instantiate(AnimationBurger, transform.position, Quaternion.identity);
+        Destroy(gameObject);
     }
 }

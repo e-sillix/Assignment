@@ -87,8 +87,9 @@ public class PlayerCounter : MonoBehaviour
         {
             // Debug.Log("Picked up a Score!");
             IncrementScore();
-            Destroy(other.gameObject); // remove the coin
-                                       // Add score, sound, etc.
+            // Destroy(other.gameObject); // remove the coin
+            // Add score, sound, etc.
+            other.GetComponent<BurgerInstance>().BugerConsumed();
         }
         if (other.CompareTag("Wall"))
         {
