@@ -50,7 +50,7 @@ public class PlayerAnimator : MonoBehaviour
     }
     void Update()
     {
-        if (ActionTriggered)
+        if (!ActionCanBeTriggered)
         {
             actionTimer += Time.deltaTime;
             if (actionTimer >= actionInterval)
